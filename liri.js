@@ -1,8 +1,10 @@
 // Fulfill the following commands:
 // -do-what-it-says
+// add !error && response.statuseCode error handling (see omdb class activity and request npm page)
+// add chalk to make it all look cool?
 
 const request = require("request");
-const argv = process.argv;
+let doWhatFlag = false;
 
 function parseTime(time) {
   // converts military time to hh:mm am/pm
@@ -16,8 +18,6 @@ function parseTime(time) {
   return h + ":" + m + amPm
 }
 
-console.log(parseTime("00:37"));
-console.log(parseTime("12:37"));
 
 function parseDate(date) {
   //converts YYYY-MM-DD to MM/DD/YYYY
@@ -27,16 +27,10 @@ function parseDate(date) {
 
 function concertThis(artist) {
   if (!artist) return console.log("You need to give me an artist with this command!");
-  console.log(artist);
-  // Name of the venue
-  // Venue location
-  // Date of the Event (use moment to format this as "MM/DD/YYYY")
   let url = "https://rest.bandsintown.com/artists/" + artist.trim() + "/events?app_id=codingbootcamp";
-
   const j = {json: true};
   request(url, j, (err, res) => {
     if (err) return console.log(err);
-    
     for (var i = 0; i < res.body.length; i++){
       console.log("--------------------------------")
       console.log(res.body[i].venue.name)
@@ -71,8 +65,6 @@ function spotifyThis(song) {
   });
 }
 
-
-
 function movieThis(mov) {
   // rewrite with template literal?
   if (!mov) return console.log("You need to give me a movie with this command!");
@@ -99,39 +91,54 @@ function movieThis(mov) {
 }
 
 function doWhatItSays() {
-  console.log("yo");
+  doWhatFlag = true;
+  const fs = require('fs');
+  fs.readFile("./random.txt", "utf8",(err, data)=>{
+    if (err) return console.log(err);
+    const pieces = data.split(",");
+    console.log(pieces[0], pieces[1]);
+    executeSwitchStatement(pieces[0], pieces[1]);
+  })
 }
 
-
-
-if (argv[2]) {
-  switch (argv[2]) {
-    case "concert-this":
-
-      concertThis(argv[3]);
-      break;
-    case "ct":
-      concertThis(argv[3]);
-      break;
-    case ("spotify-this"):
-      spotifyThis(argv[3]);
-      break;
-    case ("st"):
-      spotifyThis(argv[3]);
-      break;
-    case "movie-this":
-      movieThis(argv[3]);
-      break;
-    case "mt":
-      movieThis(argv[3]);
-      break;
-    case "do-what-it-says":
-      doWhatItSays();
-      break;
-    case "dwis":
-      doWhatItSays();
-      break;
-    default:
-      console.log("I didn't recognize that command");
+function executeSwitchStatement(command, target) {
+  if (command) {
+    switch (command) {
+      case "concert-this":
+        concertThis(target);
+        break;
+      case "ct":
+        concertThis(target);
+        break;
+      case "spotify-this-song":
+        spotifyThis(target);
+        break;
+      case ("spotify-this"):
+        spotifyThis(target);
+        break;
+      case ("st"):
+        spotifyThis(target);
+        break;
+      case "movie-this":
+        movieThis(target);
+        break;
+      case "mt":
+        movieThis(target);
+        break;
+      case "do-what-it-says":
+        if(!doWhatFlag) doWhatItSays();
+        break;
+      case "dwis":
+        if(!doWhatFlag) doWhatItSays();
+        break;
+      default:
+        if (doWhatFlag){
+          console.log("I didn't understand the instructions in random.txt");
+        } else { 
+          console.log("I didn't recognize that command")
+        };
+    }
   }
 }
+
+if (process.argv[2]) executeSwitchStatement(process.argv[2], process.argv[3]);
