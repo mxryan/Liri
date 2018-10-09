@@ -17,6 +17,7 @@
   },
   "homepage": "https://github.com/mxryan/Liri#readme",
   "dependencies": {
+    "chalk": "^2.4.1",
     "dotenv": "^6.0.0",
     "node-spotify-api": "^1.0.7",
     "require": "^2.4.20"

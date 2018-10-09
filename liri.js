@@ -1,9 +1,5 @@
-// Fulfill the following commands:
-// -do-what-it-says
-// add !error && response.statuseCode error handling (see omdb class activity and request npm page)
-// add chalk to make it all look cool?
-
 const request = require("request");
+const c = require("chalk");
 let doWhatFlag = false;
 
 function parseTime(time) {
@@ -18,7 +14,6 @@ function parseTime(time) {
   return h + ":" + m + amPm
 }
 
-
 function parseDate(date) {
   //converts YYYY-MM-DD to MM/DD/YYYY
   const pieces = date.split("-");
@@ -26,31 +21,29 @@ function parseDate(date) {
 }
 
 function concertThis(artist) {
-  console.log(" ");
-  if (!artist) return console.log("You need to give me an artist with this command!");
+  if (!artist) return console.log(c.red("You need to give me an artist with this command!"));
   let url = "https://rest.bandsintown.com/artists/" + artist.trim() + "/events?app_id=codingbootcamp";
   const j = {json: true};
   request(url, j, (err, res) => {
     if (err) return console.log(err);
     for (var i = 0; i < res.body.length; i++){
-      console.log("--------------------------------")
-      console.log(res.body[i].venue.name)
-      console.log(
+      console.log(c.yellow("--------------------------------"));
+      console.log(c.magenta(res.body[i].venue.name));
+      console.log(c.cyan(
         res.body[i].venue.city
         + (res.body[i].venue.region ? ", " +res.body[i].venue.region: "") 
         + ", " + res.body[i].venue.country
-      );
+      ));
       let dt = res.body[i].datetime.split("T");
-      console.log(parseDate(dt[0]));
-      console.log(parseTime(dt[1]));
+      console.log(c.cyan(parseDate(dt[0])), c.blue(parseTime(dt[1])));
+      
     }
     console.log(" ");
   })
 }
 
 function spotifyThis(song) {
-  console.log(" ");
-  if (!song) return console.log("You have to give me a song with this command!");
+  if (!song) return console.log(c.red("You have to give me a song with this command!"));
   require("dotenv").config();
   const keys = require("./keys");
   const Spotify = require('node-spotify-api');
@@ -61,18 +54,17 @@ function spotifyThis(song) {
   }, function (err, data) {
     if (err) return console.log('Error occurred: ' + err);
     let x = data.tracks.items[0];
-    console.log("Album: " + x.album.name);
-    console.log("Artist: " + x.artists[0].name);
-    console.log("Track: " + x.name);
-    console.log("Preview: " + x.preview_url);
-    console.log(" ");
+    console.log(c.cyan("============================================"))
+    console.log(c.magenta("Album:   ") + c.blue(x.album.name));
+    console.log(c.magenta("Artist:  ") +  c.cyan(x.artists[0].name));
+    console.log(c.magenta("Track:   ") +  c.blue(x.name));
+    console.log(c.magenta("Preview: ")+ c.cyan(x.preview_url));
+    console.log(c.cyan("============================================"));
   });
-  
 }
 
 function movieThis(mov) {
-  // rewrite with template literal?
-  if (!mov) return console.log("You need to give me a movie with this command!");
+  if (!mov) return console.log(c.red("You need to give me a movie with this command!"));
   let url = "https://www.omdbapi.com/?apikey=a2a741e9&t=" + mov.trim();
   const j = {json: true};
   request(url, j, (err, res) => {
@@ -80,19 +72,19 @@ function movieThis(mov) {
     if (res.body.Error) return console.log("Couldn't find that!");
     let json = res.body;
     console.log(" ");
-    console.log("Title: " + json.Title);
-    console.log("Year: " + json.Year);
+    console.log(c.magenta("Title: ") + c.cyan(json.Title));
+    console.log(c.magenta("Year: ") + c.cyan(json.Year));
     if (json.Ratings) {
       for (let i = 0; i < json.Ratings.length; i++) {
-        console.log(json.Ratings[i].Source + " Rating: " + json.Ratings[i].Value);
+        console.log(c.magenta(json.Ratings[i].Source + " Rating: ") + c.yellow(json.Ratings[i].Value));
       }
     }
-    console.log("Country: " + json.Country);
-    console.log("Language(s): " + json.Language);
-    console.log("----------Plot----------");
-    console.log(json.Plot);
-    console.log("------------------------");
-    console.log("Actors: " + json.Actors + "\n");
+    console.log(c.magenta("Country: ") + c.cyan(json.Country));
+    console.log(c.magenta("Language(s): ") + c.cyan(json.Language));
+    console.log(c.blue("------------------------------Plot------------------------------"));
+    console.log(c.magenta(json.Plot));
+    console.log(c.blue("----------------------------------------------------------------"));
+    console.log(c.magenta("Actors: ") + c.cyan(json.Actors));
     console.log(" ");
   });
 }
@@ -105,7 +97,7 @@ function doWhatItSays() {
     const pieces = data.split(",");
     console.log(pieces[0], pieces[1]);
     executeSwitchStatement(pieces[0], pieces[1]);
-  })
+  });
 }
 
 function executeSwitchStatement(command, target) {
