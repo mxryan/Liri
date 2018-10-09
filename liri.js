@@ -26,6 +26,7 @@ function parseDate(date) {
 }
 
 function concertThis(artist) {
+  console.log(" ");
   if (!artist) return console.log("You need to give me an artist with this command!");
   let url = "https://rest.bandsintown.com/artists/" + artist.trim() + "/events?app_id=codingbootcamp";
   const j = {json: true};
@@ -43,10 +44,12 @@ function concertThis(artist) {
       console.log(parseDate(dt[0]));
       console.log(parseTime(dt[1]));
     }
+    console.log(" ");
   })
 }
 
 function spotifyThis(song) {
+  console.log(" ");
   if (!song) return console.log("You have to give me a song with this command!");
   require("dotenv").config();
   const keys = require("./keys");
@@ -62,7 +65,9 @@ function spotifyThis(song) {
     console.log("Artist: " + x.artists[0].name);
     console.log("Track: " + x.name);
     console.log("Preview: " + x.preview_url);
+    console.log(" ");
   });
+  
 }
 
 function movieThis(mov) {
@@ -74,6 +79,7 @@ function movieThis(mov) {
     if (err) return console.log(err);
     if (res.body.Error) return console.log("Couldn't find that!");
     let json = res.body;
+    console.log(" ");
     console.log("Title: " + json.Title);
     console.log("Year: " + json.Year);
     if (json.Ratings) {
@@ -87,6 +93,7 @@ function movieThis(mov) {
     console.log(json.Plot);
     console.log("------------------------");
     console.log("Actors: " + json.Actors + "\n");
+    console.log(" ");
   });
 }
 
